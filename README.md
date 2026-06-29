@@ -1,400 +1,329 @@
-# Borrowing Power Calculator - Automated Test Suite
+# Borrowing Calculator UI Tests
 
-Automated UI testing suite for the borrowing power calculator using **Cucumber (BDD)** and **Playwright**. This project provides comprehensive test coverage with HTML and XML reporting capabilities.
+Simple automated UI tests for a public borrowing calculator using **Cucumber BDD**, **Playwright**, and the **Page Object Model**.
 
-## Overview
-
-This test automation project validates the borrowing power calculator functionality with a focus on:
-- **Form validation** - Ensuring all input fields work correctly
-- **Calculation accuracy** - Verifying borrowing amount calculations
-- **Form reset** - Testing the "Start over" functionality
-- **User interactions** - Simulating real user workflows
-
-## Features
-
-✅ **Cucumber/Gherkin BDD Framework** - Human-readable test scenarios  
-✅ **Playwright Browser Automation** - Fast, reliable cross-browser testing  
-✅ **Multiple Output Formats** - JSON, XML, NDJSON reports  
-✅ **HTML Report Generation** - Beautiful, detailed test reports  
-✅ **CLI Support** - Run tests from command line for CI/CD integration  
-✅ **Headless & Headed Modes** - Run in headless or visual mode  
+This README contains all setup, run, report, and project recreation steps so the same project can be created on another machine or directly in a personal GitHub repository.
 
 ## Prerequisites
 
-- **Node.js** 16.x or higher
-- **npm** 8.x or higher
-- **Chrome/Chromium** browser (Playwright manages this automatically)
+Before running the project, install:
 
-## Installation
+- Node.js 18 or later
+- npm
+- Git, if cloning from a repository
 
-1. **Clone or download this repository**
-   ```bash
-   git clone <repository-url>
-   cd borrowing-calculator-tests
-   ```
+Check the installed versions:
 
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
-
-   This will install:
-   - `@cucumber/cucumber` - BDD testing framework
-   - `@playwright/test` - Browser automation library
-   - `playwright` - Chromium browser binaries
-
-## Project Structure
-
+```bash
+node --version
+npm --version
 ```
-borrowing-calculator-tests/
+
+## What is covered
+
+1. A single applicant with the requested values should see a borrowing estimate of **$494,000**.
+2. Clicking **Start over** should clear the form.
+
+## Test data used
+
+The main calculation scenario uses this data:
+
+| Field | Value |
+| --- | --- |
+| Application type | Single |
+| Dependants | 0 |
+| Property type | Home to live in |
+| Annual income | 100000 |
+| Other annual income | 10000 |
+| Monthly living expenses | 2000 |
+| Current home loan repayments | 0 |
+| Other loan repayments | 100 |
+| Other monthly commitments | 0 |
+| Total credit card limits | 10000 |
+
+Expected borrowing estimate: **$494,000**.
+
+## Framework structure
+
+```text
+anzFrontEndTesting/
 ├── features/
-│   ├── calculator.feature          # Gherkin test scenarios
-│   ├── step_definitions/
-│   │   └── calculator.js          # Step implementation
-│   └── support/
-│       ├── browser.js             # Browser management
-│       └── helpers.js             # Test helper functions
+│   └── calculator.feature                 # Test scenarios written in Gherkin
+├── step_definitions/
+│   └── calculator.steps.js                # Step definitions for the feature file
+├── support/
+│   ├── browser.js                         # Playwright browser and page setup
+│   └── hooks.js                           # Cucumber Before, After, and AfterAll hooks
+├── pages/
+│   └── borrowingCalculatorPage.js         # Page Object Model for calculator actions
 ├── scripts/
-│   └── generate-html-report.js    # HTML report generator
-├── reports/
-│   ├── results.json               # JSON test results
-│   ├── results.xml                # XML test results
-│   ├── results.ndjson             # NDJSON test results
-│   └── report.html                # HTML test report
-├── cucumber.js                     # Cucumber configuration
-├── playwright.config.js            # Playwright configuration
-├── package.json                    # Project dependencies
-└── README.md                       # This file
+│   ├── generate-html-report.js            # Builds HTML report from JSON
+│   └── prepare-reports.js                 # Clears and creates reports folder
+├── .gitignore                             # Files and folders ignored by Git
+├── cucumber.js                            # Cucumber config and report outputs
+├── LICENSE                                # Project license
+├── package.json                           # Dependencies and scripts
+└── README.md
 ```
 
-## Running Tests
+Generated after running tests:
 
-### Standard Test Run
-Run all tests and generate reports:
+```text
+reports/
+├── results.json                           # Cucumber JSON result
+├── results.xml                            # JUnit XML result
+├── results.ndjson                         # Cucumber message result
+└── report.html                            # HTML report
+```
+
+The `reports/` folder is generated when tests run, so it may not exist before the first test execution.
+
+## Files to create in a new repository
+
+If creating this project again in GitHub web or on a personal laptop, create these files and folders:
+
+```text
+features/calculator.feature
+step_definitions/calculator.steps.js
+support/browser.js
+support/hooks.js
+pages/borrowingCalculatorPage.js
+scripts/generate-html-report.js
+scripts/prepare-reports.js
+.gitignore
+cucumber.js
+LICENSE
+package.json
+README.md
+```
+
+Do not manually create these folders/files unless they are generated or installed locally:
+
+```text
+.git/
+node_modules/
+reports/
+```
+
+These are local/generated folders and should not be committed.
+
+## Why this structure is simple
+
+- **Feature file** contains readable business scenarios only.
+- **Step file** maps Gherkin steps to page-object actions and assertions.
+- **Page object** contains selectors and page interactions.
+- **Support files** contain browser lifecycle code.
+- **Reports** are created fresh on every run in the `reports` folder.
+
+## Setup
+
+Step 1: Install dependencies:
+
 ```bash
-npm test
+npm install
 ```
 
-### Generate HTML Reports Only
-```bash
-npm run test:html
-```
+Step 2: Install the Chromium browser used by Playwright:
 
-### Run Tests in Headed Mode (with browser visible)
-```bash
-npm run test:headed
-```
-
-### Debug Mode
-```bash
-npm run test:debug
-```
-
-### CI/CD Mode
-```bash
-npm run test:ci
-```
-
-## Test Scenarios
-
-### Scenario 1: Calculate Borrowing Power
-Tests the core functionality of the calculator:
-- Selects "Single" application type
-- Selects "0" dependants
-- Selects "Home to live in" property type
-- Enters annual income of $120,000
-- Enters other income as $0
-- Enters monthly living expenses
-- Enters loan repayment information
-- Enters credit card limits
-- Clicks "Work out how much I could borrow"
-- Verifies a borrowing amount is calculated and displayed
-
-**Expected Result**: Calculator displays a borrowing amount greater than $0
-
-### Scenario 2: Validate Form Clear on Reset
-Tests the "Start over" functionality:
-- Fills the entire form with sample data
-- Calculates borrowing power
-- Clicks "Start over" button
-- Verifies all form fields are cleared
-- Verifies the form returns to initial state
-
-**Expected Result**: All form fields are cleared and calculator ready for new input
-
-## Output Reports
-
-### JSON Report
-Located at: `reports/results.json`
-
-Contains detailed test execution data in JSON format, including:
-- Feature names and descriptions
-- Scenario details
-- Step definitions and execution status
-- Timing information
-- Error messages (if any)
-
-Example:
-```json
-[
-  {
-    "name": "Borrowing Power Calculator",
-    "elements": [
-      {
-        "name": "Calculate borrowing power for a single applicant",
-        "steps": [
-          {
-            "keyword": "Given",
-            "name": "I navigate to the borrowing power calculator",
-            "result": {
-              "status": "passed",
-              "duration": 2500000000
-            }
-          }
-        ]
-      }
-    ]
-  }
-]
-```
-
-### XML Report
-Located at: `reports/results.xml`
-
-JUnit-formatted XML report suitable for CI/CD pipeline integration and test dashboards.
-
-### HTML Report
-Located at: `reports/report.html`
-
-Beautiful, interactive HTML report with:
-- Summary statistics (total, passed, failed scenarios)
-- Pass/failure rate visualization
-- Detailed scenario and step information
-- Error messages and stack traces
-- Mobile-friendly responsive design
-
-**To view the HTML report**:
-```bash
-# Open in default browser
-open reports/report.html              # macOS
-start reports/report.html             # Windows
-xdg-open reports/report.html          # Linux
-```
-
-## Configuration Files
-
-### cucumber.js
-Configures Cucumber test runner:
-- Test file patterns
-- Reporter formats
-- Formatter options
-- Step definitions path
-
-### playwright.config.js
-Configures Playwright browser automation:
-- Browser type and launch options
-- Viewport size
-- Screenshot/video capture on failure
-- Test timeouts
-- Base URL for the calculator
-
-Modify these files to change test behavior, add new reporters, or adjust browser settings.
-
-## Environment Variables
-
-### HEADED
-Set to `true` to run tests with visible browser window:
-```bash
-HEADED=true npm test
-```
-
-Default: `false` (headless mode)
-
-## Troubleshooting
-
-### Tests Timeout
-If tests time out, increase the timeout in `cucumber.js`:
-```javascript
-timeout: 60000 // milliseconds
-```
-
-### Playwright Binary Issues
-If Playwright fails to find Chromium:
 ```bash
 npx playwright install chromium
 ```
 
-### Memory Issues
-Reduce concurrency in `cucumber.js`:
-```javascript
-workers: 1 // Run tests sequentially
+## Create this project on a personal laptop
+
+Use this approach if you need a clean copy in a personal GitHub repository.
+
+Step 1: Create a new folder:
+
+```bash
+mkdir anzFrontEndTesting
+cd anzFrontEndTesting
 ```
 
-## CI/CD Integration
+Step 2: Create the folder structure:
 
-### GitHub Actions Example
-```yaml
-name: Test Calculator
-on: [push, pull_request]
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: '18'
-      - run: npm install
-      - run: npm run test:ci
-      - uses: actions/upload-artifact@v3
-        if: always()
-        with:
-          name: reports
-          path: reports/
+```bash
+mkdir features step_definitions support pages scripts
 ```
 
-### Azure Pipelines Example
-```yaml
-trigger:
-  - main
+Step 3: Copy or recreate the project files listed in the **Files to create in a new repository** section.
 
-pool:
-  vmImage: 'ubuntu-latest'
+Step 4: Install dependencies:
 
-steps:
-  - task: NodeTool@0
-    inputs:
-      versionSpec: '18.x'
-  
-  - script: npm install
-    displayName: 'Install dependencies'
-  
-  - script: npm run test:ci
-    displayName: 'Run tests'
-  
-  - task: PublishBuildArtifacts@1
-    condition: always()
-    inputs:
-      pathToPublish: 'reports'
-      artifactName: 'test-reports'
+```bash
+npm install
 ```
 
-## Performance Tips
+Step 5: Install Playwright Chromium:
 
-1. **Use Headless Mode** (default) - Faster execution
-2. **Parallel Execution** - Configure workers in cucumber.js
-3. **Selective Testing** - Run specific feature files:
-   ```bash
-   npx cucumber-js features/calculator.feature
-   ```
-4. **Network Optimization** - Tests wait for network idle; adjust if needed
-
-## Extending the Test Suite
-
-### Add a New Test Scenario
-
-1. **Edit `features/calculator.feature`**
-   ```gherkin
-   Scenario: New test scenario
-     Given I navigate to the borrowing power calculator
-     When I do something
-     Then something should happen
-   ```
-
-2. **Implement Step Definitions in `features/step_definitions/calculator.js`**
-   ```javascript
-   When('I do something', async function() {
-     // Implementation
-   });
-
-   Then('something should happen', async function() {
-     // Assertion
-   });
-   ```
-
-3. **Run tests**
-   ```bash
-   npm test
-   ```
-
-### Add Custom Selectors
-
-Update `features/support/helpers.js` with your selectors:
-```javascript
-const getCustomSelector = (value) => {
-  return `[data-testid="custom-${value}"]`;
-};
+```bash
+npx playwright install chromium
 ```
 
-## Known Limitations
+Step 6: Run the tests:
 
-- Tests run in Chromium only (can be extended to Firefox, Webkit)
-- Real-time network lag not simulated
-- Mobile viewport testing can be added for responsive testing
+```bash
+npm test
+```
 
-## Best Practices
+Step 7: Generate the HTML report:
 
-1. **Descriptive Scenario Names** - Clearly state what is being tested
-2. **Keep Steps Simple** - Each step should do one thing
-3. **Use Data Tables** - For multiple test cases with data
-4. **Proper Waits** - Use explicit waits for element availability
-5. **Error Handling** - Capture and report errors clearly
+```bash
+npm run test:report
+```
 
-## Support & Contribution
+Step 8: Initialize Git and push to your own repository:
 
-For issues, questions, or contributions:
-1. Check existing issues in the repository
-2. Create detailed bug reports with reproduction steps
-3. Submit pull requests with test coverage
+```bash
+git init
+git add .
+git commit -m "Initial commit: borrowing calculator UI tests"
+git branch -M main
+git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPOSITORY_NAME.git
+git push -u origin main
+```
 
-## License
+Replace `YOUR_USERNAME` and `YOUR_REPOSITORY_NAME` with your personal GitHub details.
 
-MIT License - See LICENSE file for details
+## Create this project directly in GitHub web
 
-## Additional Resources
+Use this approach if you want to create the project manually in a GitHub repository without pushing from this machine.
 
-- [Cucumber.js Documentation](https://github.com/cucumber/cucumber-js)
-- [Playwright Documentation](https://playwright.dev)
-- [Gherkin Syntax Guide](https://cucumber.io/docs/gherkin/reference/)
+1. Create a new repository in your personal GitHub account.
+2. Create each file from the **Files to create in a new repository** section.
+3. For files inside folders, use the full path when creating the file in GitHub web. Example: `features/calculator.feature`.
+4. Copy the content from your local project files into the matching GitHub files.
+5. Commit the files from GitHub web.
+6. On your personal laptop, clone the repository:
 
----
+```bash
+git clone https://github.com/YOUR_USERNAME/YOUR_REPOSITORY_NAME.git
+cd YOUR_REPOSITORY_NAME
+```
 
-**Last Updated**: 2026-06-27  
-**Test Framework Version**: Cucumber 10.x, Playwright 1.45.x
+7. Install and run locally:
 
-Front End Testing Scenario
+```bash
+npm install
+npx playwright install chromium
+npm run test:report
+```
 
-Our developers have finished coding a borrowing calculator and would like to make sure that the calculator continues to work as they make other changes to the page. They have asked you to build automated tests covering various use cases to verify that the calculator is working properly. They intend to run these tests as part of continuous testing.
+## Clean-copy checklist
 
-The current working production page is here: https://www.anz.com.au/personal/home-loans/calculators-tools/borrowing-power-calculator/
+Before copying this project to another machine or repository, include only project source files:
 
-Exercise
+- `features/`
+- `step_definitions/`
+- `support/`
+- `pages/`
+- `scripts/`
+- `.gitignore`
+- `cucumber.js`
+- `LICENSE`
+- `package.json`
+- `README.md`
 
-Develop the following two tests:
+Do not copy:
 
-A person with the following details:
-Single,
-0 dependants,
-buying a home to live in,
-with income of $100,000,
-other income $10,000,
-living expenses $2000,
-current home loan repayments $0,
-other loan repayments $100,
-other commitments $0
-and total credit card limits $10,000
-has a borrowing estimate of $494,000.
-Clicking the ‘start over’ button clears the form
-Implementation Requirements
+- `.git/`
+- `node_modules/`
+- `reports/`
+- npm debug logs
+- local credentials or tokens
+- machine-specific Git credentials
 
-You will need to create a project in either JavaScript or Java or any programming language you are comfortable with minimal dependencies
-The project should use Cucumber (gherkin - BDD) with an open source UI test automation runtime of your choice (e.g. Cypress, Playwright, WebdriverIO)
-The tests should target a browser of your choice (e.g. Chrome, Firefox)
-The tests should run through Command Line Interface in order to support CI/CD
-All tests should pass and produce new results every time they are run
-The solution should output results to JSON or XML and be able to generate HTML reports from the output file.
-Sharing Instructions
+## Run tests
 
-Please complete the solutions and share them via a public repository in GitHub. Please do not use ANZ Bank in any of the references. The repositories should contain clear instructions (README.md) on how to setup, tests and generate report as well as specify where to find results.
+Step 3: Run tests and produce JSON, XML, and NDJSON output:
 
- 
+```bash
+npm test
+```
+
+Step 4: Run tests and generate the HTML report:
+
+```bash
+npm run test:report
+```
+
+Step 5: Use this command in CI:
+
+```bash
+npm run test:ci
+```
+
+## Open the HTML report
+
+After running `npm run test:report`, open this file in a browser:
+
+```bash
+reports/report.html
+```
+
+On Windows, you can open it from File Explorer or run:
+
+```bash
+start reports/report.html
+```
+
+## Results
+
+After each run, results are created in the `reports` folder:
+
+- `reports/results.json` - Cucumber JSON result
+- `reports/results.xml` - JUnit XML result
+- `reports/results.ndjson` - Cucumber message result
+- `reports/report.html` - HTML report generated from JSON
+
+The `reports` folder is cleared and recreated before every test run, so every run produces fresh results.
+
+## How the test flow works
+
+1. Cucumber reads the scenarios from `features/calculator.feature`.
+2. The matching step definitions run from `step_definitions/calculator.steps.js`.
+3. The Cucumber hooks create a fresh Playwright browser page before each scenario.
+4. The step definitions call methods from the Page Object Model class.
+5. The page object fills the form, submits it, reads the result, and checks whether the form is cleared.
+6. Cucumber writes JSON, XML, and NDJSON reports.
+7. The HTML report script builds `reports/report.html` from the JSON result.
+
+## Main files to explain in an interview
+
+- `features/calculator.feature` explains the two required business scenarios.
+- `pages/borrowingCalculatorPage.js` is the Page Object Model class.
+- `step_definitions/calculator.steps.js` keeps the steps short and readable.
+- `support/hooks.js` creates a fresh browser page for each scenario.
+- `cucumber.js` configures CLI execution and report output.
+
+## Useful npm scripts
+
+| Command | Purpose |
+| --- | --- |
+| `npm install` | Installs project dependencies |
+| `npx playwright install chromium` | Installs the browser used by the tests |
+| `npm test` | Runs the tests and creates machine-readable reports |
+| `npm run test:report` | Runs the tests and creates the HTML report |
+| `npm run test:ci` | Runs the CI-friendly test command |
+
+## Troubleshooting
+
+If dependencies are missing, run:
+
+```bash
+npm install
+```
+
+If Chromium is missing, run:
+
+```bash
+npx playwright install chromium
+```
+
+If reports are missing, run:
+
+```bash
+npm run test:report
+```
+
+If a test times out, rerun the test because the target page is a public website and can sometimes load slowly.
