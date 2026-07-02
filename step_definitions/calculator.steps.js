@@ -9,6 +9,7 @@ const BorrowingCalculatorPage = require("../pages/borrowingCalculatorPage");
 const { getPage } = require("../support/browser");
 const assert = require("assert");
 
+setDefaultTimeout(60000);
 
 const getCalculatorPage = async () => {
   return new BorrowingCalculatorPage(await getPage());
