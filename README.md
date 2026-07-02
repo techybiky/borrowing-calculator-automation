@@ -46,7 +46,7 @@ Expected borrowing estimate: **$494,000**.
 ## Framework structure
 
 ```text
-anzFrontEndTesting/
+FrontEndTesting/
 ├── features/
 │   └── calculator.feature                 # Test scenarios written in Gherkin
 ├── step_definitions/
@@ -136,8 +136,8 @@ Use this approach if you need a clean copy in a personal GitHub repository.
 Step 1: Create a new folder:
 
 ```bash
-mkdir anzFrontEndTesting
-cd anzFrontEndTesting
+mkdir FrontEndTesting
+cd FrontEndTesting
 ```
 
 Step 2: Create the folder structure:
